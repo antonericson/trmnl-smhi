@@ -1,0 +1,29 @@
+#
+# Changes to this file will be overwritten by `trmnlp pull`.
+#
+# Docs: https://help.trmnl.com/en/articles/10542599-importing-and-exporting-private-plugins#h_581fb988f0
+#
+# Working; 'https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/11.974560/lat/57.708870/data.json'
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+polling_url: 'https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{{longitude}}/lat/{{latitude}}/data.json'
+polling_headers: ''
+name: SMHI Weather
+custom_fields:
+- keyname: city
+  field_type: string
+  placeholder: Gothenburg
+  name: City
+- keyname: latitude
+  field_type: string
+  placeholder: '59.4'
+  name: Latitude
+- keyname: longitude
+  field_type: string
+  placeholder: '18.5'
+  name: Longitude
+refresh_interval: 1440
