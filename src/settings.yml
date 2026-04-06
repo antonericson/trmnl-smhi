@@ -20,14 +20,14 @@ custom_fields:
   name: City
 - keyname: latitude
   field_type: string
-  placeholder: '59.4'
+  placeholder: '57.708870'
   name: Latitude
 - keyname: longitude
   field_type: string
-  placeholder: '18.5'
+  placeholder: '11.974560'
   name: Longitude
 - keyname: forecast_count
-  field_type: int
+  field_type: number
   placeholder: 7
   name: Number of hourly forecasts to display
 - keyname: forecast_hours

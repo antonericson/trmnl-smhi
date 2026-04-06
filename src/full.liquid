@@ -67,7 +67,8 @@
         {%- assign data = currentEntry.data -%}
         {%- assign wsymb_idx = data.symbol_code | minus: 1 -%}
         <div class="item flex flex--col flex--center-x flex--center-y">
-          <div class="label label--small label--inverted">{{ currentEntryTime | date: "%a %H:00" }}</div>
+          {%- assign weekdayIndex = currentEntryTime | date: "%u" | minus: 1 -%}
+          <div class="label label--small label--inverted">{{ daysShort[weekdayIndex] }} {{ currentEntryTime | date: "%H:00" }}</div>
           <img class="image w--12" src="https://trmnl.com/images/plugins/weather/{{ weatherIcons[wsymb_idx] }}">
           <div class="value value--xxsmall lg:value--xsmall value--tnums">{{ data.air_temperature | round }}°C</div>
           <div class="value value--xxsmall lg:value--xsmall value--tnums">{{ data.wind_speed | round }}-{{ data.wind_speed_of_gust | round }} m/s</div>
