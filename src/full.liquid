@@ -1,14 +1,11 @@
-{%- assign hoursToDisplay = "06, 12, 16, 20" | split: ", " -%}
-{%- assign show = 7 -%}
 {%- assign precipitationType = "Ingen Nederbörd, Regn, Åska, Underkylt regn, Blandnederbörd, Snö, Blötsnö, Regn/snöblandat, Iskorn, Hagel, Duggregn, Underkylt duggregn" | split: ", " -%}
 {%- assign weatherDescriptions = "Klar himmel, Nästan klar himmel, Varierande molnighet, Halvklart, Molnig himmel, Mulet, Dimma, Lätta regnskurar, Måttliga regnskurar, Kraftiga regnskurar, Åskväder, Lätta snöslaskskurar, Måttliga snöslaskskurar, Kraftiga snöslaskskurar, Lätta snöbyar, Måttliga snöbyar, Kraftiga snöbyar, Lätt regn, Måttligt regn, Kraftigt regn, Åska, Lätt snöslask, Måttlig snöslask, Kraftig snöslask, Lätt snöfall, Måttligt snöfall, Kraftigt snöfall" | split: ", " -%}
 {%- assign weatherIcons = "wi-day-sunny.svg, wi-day-sunny-overcast.svg, wi-day-cloudy.svg, wi-day-cloudy-high.svg, wi-cloudy.svg, wi-cloud.svg, wi-fog.svg, wi-day-showers.svg, wi-day-rain.svg, wi-day-rain-wind.svg, wi-thunderstorm.svg, wi-day-sleet.svg, wi-day-sleet-storm.svg, wi-day-sleet-storm.svg, wi-day-snow.svg, wi-day-snow-wind.svg, wi-day-snow-thunderstorm.svg, wi-rain.svg, wi-rain.svg, wi-rain-wind.svg, wi-lightning.svg, wi-sleet.svg, wi-sleet.svg, wi-sleet.svg, wi-snow.svg, wi-snow-wind.svg, wi-snow-wind.svg" | split: ", " -%}
 {%- assign daysLong = "Måndag, Tisdag, Onsdag, Torsdag, Fredag, Lördag, Söndag" | split: ", " -%}
 {%- assign daysShort = "Mån, Tis, Ons, Tors, Fre, Lör, Sön" | split: ", " -%}
-{%- assign i = 0 -%}
 
 {%- assign currentEntry = timeSeries[1] -%}
-{%- assign validtimetz = currentEntry.time | date: "%s" | plus: trmnl.user.utc_offset -%}
+{%- assign currentEntryTime = currentEntry.time | date: "%s" | plus: trmnl.user.utc_offset -%}
 {%- assign currentData = currentEntry.data -%}
 {%- assign temp = currentData.air_temperature | round -%}
 {%- assign wind = currentData.wind_speed | round -%}
@@ -19,10 +16,12 @@
 {%- assign weatherIndex = currentData.symbol_code | minus: 1 -%}
 {%- assign weatherDescription = weatherDescriptions[weatherIndex] -%}
 {%- assign icon = weatherIcons[weatherIndex] -%}
-{%- assign now_timetz = validtimetz -%}
-{%- assign today_date = now_timetz | date: "%Y-%m-%d" -%}
-{%- assign day_u = now_timetz | date: "%u" | plus: 0 -%}
-{%- assign day = days_l[day_u] -%}
+{%- assign currentTimeObject = currentEntryTime -%}
+{%- assign todayDate = currentTimeObject | date: "%Y-%m-%d" -%}
+{%- assign weekdayIndex = currentTimeObject | date: "%u" | plus: 0 -%}
+{%- assign weekday = daysLong[weekdayIndex] -%}
+
+
 <div class="layout layout--col layout--stretch">
   <div class="flex flex--row flex--center-y flex--stretch" style="padding:2rem">
     <div class="item item--emphasis-2">
@@ -58,44 +57,37 @@
     </div>
   </div>
 
+  <div class="divider" style="margin: -1rem 0 -10rem 0"></div>
+
   <div class="flex flex--row flex--stretch">
-    {%- for series in timeSeries -%}
-      {%- assign validtimetz = series.time | date: "%s" | plus: trmnl.user.utc_offset -%}
-      {%- assign fc_date = validtimetz | date: "%Y-%m-%d" -%}
-      {%- assign hour = validtimetz | date: "%H" -%}
+    {%- assign hoursToDisplay = "06, 12, 16, 20" | split: ", " -%}
+    {%- assign entriesToShow = 7 -%}
+    {%- assign i = 0 -%}
+    {%- for currentEntry in timeSeries -%}
+      {%- assign currentEntryTime = currentEntry.time | date: "%s" | plus: trmnl.user.utc_offset -%}
+      {%- assign hour = currentEntryTime | date: "%H" -%}
       {%- if hoursToDisplay contains hour -%}
         {%- assign i = i | plus: 1 -%}
-        {%- assign f_temp = series.data.air_temperature | round -%}
-        {%- assign f_wind = series.data.wind_speed | round -%}
-        {%- assign f_gust = series.data.wind_speed_of_gust | round -%}
-        {%- assign f_precip = series.data.precipitation_amount_mean -%}
-        {%- assign f_pcat_v = series.data.predominant_precipitation_type_at_surface | round -%}
-        {%- assign f_pcat = precipitationType[f_pcat_v] -%}
-        {%- assign f_humid = series.data.relative_humidity | round -%}
-        {%- assign f_wsymb2_v = series.data.symbol_code | minus: 1 -%}
-        {%- assign f_wsymb = weatherDescriptions[f_wsymb2_v] -%}
-        {%- assign f_icon = weatherIcons[f_wsymb2_v] -%}
-        {%- assign f_day_u = validtimetz | date: "%u" | plus: 0 -%}
-        {%- assign f_day = daysShort[f_day_u] -%}
+        {%- assign data = currentEntry.data -%}
+        {%- assign wsymb_idx = data.symbol_code | minus: 1 -%}
         <div class="item flex flex--col flex--center-x flex--center-y">
-          <div class="label label--small label--inverted">{{ f_day }} {{ validtimetz | date: "%H:00" }}</div>
-          <img class="image w--12" src="https://trmnl.com/images/plugins/weather/{{icon}}">
-          <div class="value value--xxsmall lg:value--xsmall value--tnums">{{ f_temp }}°C</div>
-          <div class="value value--xxsmall lg:value--xsmall value--tnums">{{ f_wind }}-{{ f_gust }} m/s</div>
+          <div class="label label--small label--inverted">{{ currentEntryTime | date: "%a %H:00" }}</div>
+          <img class="image w--12" src="https://trmnl.com/images/plugins/weather/{{ weatherIcons[wsymb_idx] }}">
+          <div class="value value--xxsmall lg:value--xsmall value--tnums">{{ data.air_temperature | round }}°C</div>
+          <div class="value value--xxsmall lg:value--xsmall value--tnums">{{ data.wind_speed | round }}-{{ data.wind_speed_of_gust | round }} m/s</div>
           <div class="value value--xxsmall lg:value--xsmall value--tnums">
-            {% if f_pcat_v > 0 %}
-              {{ f_precip }} mm{% else %}-{% endif %}
+            {% if data.predominant_precipitation_type_at_surface > 0 %}
+              {{ data.precipitation_amount_mean }} mm{% else %}-{% endif %}
           </div>
         </div>
-        {%- if i == show %}
+        {%- if i == entriesToShow %}
           {% break %}{% endif -%}
       {%- endif -%}
     {%- endfor -%}
-
   </div>
 </div>
 
 <div class="title_bar">
-  <span class="title">SMHI {{ day }} {{ now_timetz | date: "%Y-%m-%d %H:%M" }}</span>
+  <span class="title">SMHI {{ weekday }} {{ currentTimeObject | date: "%Y-%m-%d %H:%M" }}</span>
   <span class="instance">{{ trmnl.plugin_settings.custom_fields_values.city }}</span>
 </div>
