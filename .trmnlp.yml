@@ -11,6 +11,8 @@ custom_fields: {
   city: Gothenburg,
   latitude: "57.708870",
   longitude: "11.974560",
+  forecast_hours: "06,12,16,20",
+  forecast_count: 7,
 }
   
 # override variables

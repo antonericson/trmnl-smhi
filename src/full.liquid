@@ -4,22 +4,18 @@
 {%- assign daysLong = "Måndag, Tisdag, Onsdag, Torsdag, Fredag, Lördag, Söndag" | split: ", " -%}
 {%- assign daysShort = "Mån, Tis, Ons, Tors, Fre, Lör, Sön" | split: ", " -%}
 
-{%- assign currentEntry = timeSeries[1] -%}
-{%- assign currentEntryTime = currentEntry.time | date: "%s" | plus: trmnl.user.utc_offset -%}
-{%- assign currentData = currentEntry.data -%}
-{%- assign temp = currentData.air_temperature | round -%}
-{%- assign wind = currentData.wind_speed | round -%}
-{%- assign gust = currentData.wind_speed_of_gust | round -%}
-{%- assign precip = currentData.precipitation_amount_mean | round -%}
-{%- assign ptypeIndex = currentData.predominant_precipitation_type_at_surface | round -%}{%- assign ptype = precipitationType[ptypeIndex] -%}
-{%- assign humid = currentData.relative_humidity | round -%}
-{%- assign weatherIndex = currentData.symbol_code | minus: 1 -%}
+{%- assign mainEntry = timeSeries[1] -%}
+{%- assign mainEntryTime = mainEntry.time | date: "%s" | plus: trmnl.user.utc_offset -%}
+{%- assign mainData = mainEntry.data -%}
+{%- assign temp = mainData.air_temperature | round -%}
+{%- assign wind = mainData.wind_speed | round -%}
+{%- assign gust = mainData.wind_speed_of_gust | round -%}
+{%- assign precip = mainData.precipitation_amount_mean | round -%}
+{%- assign ptypeIndex = mainData.predominant_precipitation_type_at_surface | round -%}{%- assign ptype = precipitationType[ptypeIndex] -%}
+{%- assign humid = mainData.relative_humidity | round -%}
+{%- assign weatherIndex = mainData.symbol_code | minus: 1 -%}
 {%- assign weatherDescription = weatherDescriptions[weatherIndex] -%}
-{%- assign icon = weatherIcons[weatherIndex] -%}
-{%- assign currentTimeObject = currentEntryTime -%}
-{%- assign todayDate = currentTimeObject | date: "%Y-%m-%d" -%}
-{%- assign weekdayIndex = currentTimeObject | date: "%u" | plus: 0 -%}
-{%- assign weekday = daysLong[weekdayIndex] -%}
+{%- assign weatherIcon = weatherIcons[weatherIndex] -%}
 
 
 <div class="layout layout--col layout--stretch">
@@ -28,7 +24,7 @@
       <div class="meta"></div>
       <div class="flex flex--col flex--center-y flex--left">
         <div class="flex flex--row flex--center-y">
-          <img class="image w--32" src="https://trmnl.com/images/plugins/weather/{{icon}}">
+          <img class="image w--32" src="https://trmnl.com/images/plugins/weather/{{weatherIcon}}">
           <div class="flex flex--col">
             <span class="value value--xxlarge value--tnums">{{ temp }}°</span>
             <span class="value value--small" style="margin-top:-1rem">{{ weatherDescription }}</span>
@@ -60,8 +56,8 @@
   <div class="divider" style="margin: -1rem 0 -10rem 0"></div>
 
   <div class="flex flex--row flex--stretch">
-    {%- assign hoursToDisplay = "06, 12, 16, 20" | split: ", " -%}
-    {%- assign entriesToShow = 7 -%}
+    {%- assign hoursToDisplay = trmnl.plugin_settings.custom_fields_values.forecast_hours | split: "," -%}
+    {%- assign entriesToShow = trmnl.plugin_settings.custom_fields_values.forecast_count | plus: 0 -%}
     {%- assign i = 0 -%}
     {%- for currentEntry in timeSeries -%}
       {%- assign currentEntryTime = currentEntry.time | date: "%s" | plus: trmnl.user.utc_offset -%}
@@ -88,6 +84,7 @@
 </div>
 
 <div class="title_bar">
-  <span class="title">SMHI {{ weekday }} {{ currentTimeObject | date: "%Y-%m-%d %H:%M" }}</span>
+  {%- assign weekdayIndex = mainEntryTime | date: "%u" | minus: 1 -%}
+  <span class="title">SMHI {{ daysLong[weekdayIndex] }} {{ mainEntryTime | date: "%Y-%m-%d %H:%M" }}</span>
   <span class="instance">{{ trmnl.plugin_settings.custom_fields_values.city }}</span>
 </div>

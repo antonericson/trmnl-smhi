@@ -26,4 +26,12 @@ custom_fields:
   field_type: string
   placeholder: '18.5'
   name: Longitude
+- keyname: forecast_count
+  field_type: int
+  placeholder: 7
+  name: Number of hourly forecasts to display
+- keyname: forecast_hours
+  field_type: string
+  placeholder: "06,12,16,20"
+  name: Comma-separated list of hours (24h) to include in forecast
 refresh_interval: 1440
