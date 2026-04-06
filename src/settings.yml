@@ -34,4 +34,4 @@ custom_fields:
   field_type: string
   placeholder: "06,12,16,20"
   name: Comma-separated list of hours (24h) to include in forecast
-refresh_interval: 1440
+refresh_interval: 60
